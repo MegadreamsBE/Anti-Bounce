@@ -5,11 +5,11 @@ Version 2 is a fully rewritten version that has no compiled scripts anymore and 
 
 This resource has been licensed under the MIT license. A LICENSE file is available when downloading the resource.
 
-== INSTALLATION ==
-1. Download the .zip file.
-2. Navigate to mods/deathmatch/resources and paste the zip file.
-3. Start the resource. (Do /refresh if the server was already running).
-3a (optional). Change "config.xml" to the way you like it.
+== INSTALLATION ==<br />
+1. Download the .zip file.<br />
+2. Navigate to mods/deathmatch/resources and paste the zip file.<br />
+3. Start the resource. (Do /refresh if the server was already running).<br />
+3a (optional). Change "config.xml" to the way you like it.<br />
 
 This resource has originally been created by Arezu and MegaDreams.
 
