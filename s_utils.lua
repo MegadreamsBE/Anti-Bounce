@@ -15,26 +15,17 @@
 -- * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ---------------------------------------------------
 
---[[------------------
-* We highly discourage
-* directly editing the
-* scripts. Please use
-* the customization
-* possibilities.
---------------------]]
+-----------------------------------
+-- * Variables
+-----------------------------------
 
-----------------------
--- Variables
-----------------------
+Utils = setmetatable({},{__index = {}})
 
-Utils = {}
-Utils = setmetatable({},{__index = Utils})
+-----------------------------------
+-- * Functions
+-----------------------------------
 
-----------------------
--- Functions/Events
-----------------------
-
-function Utils:outputMessageToAdmins(lMessage,...)
+function Utils.outputMessageToAdmins(lMessage,...)
 	for _,lPlayer in pairs(getElementsByType("player")) do
 		if(isObjectInACLGroup("user."..lPlayer:getAccount():getName(),ACLGroup.get("Admin"))) then
 			outputChatBox(lMessage,lPlayer,...)
@@ -42,4 +33,5 @@ function Utils:outputMessageToAdmins(lMessage,...)
 	end
 	
 	outputDebugString(lMessage:gsub("#%x%x%x%x%x%x",""),3)
+	outputServerLog(lMessage:gsub("#%x%x%x%x%x%x",""))
 end

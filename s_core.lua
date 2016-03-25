@@ -15,35 +15,22 @@
 -- * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ---------------------------------------------------
 
---[[------------------
-* We highly discourage
-* directly editing the
-* scripts. Please use
-* the customization
-* possibilities.
---------------------]]
+-----------------------------------
+-- * Variables
+-----------------------------------
 
-----------------------
--- Variables
-----------------------
+Core = setmetatable({},{__index = {}})
 
-Core = {}
-Core = setmetatable({},{__index = Core})
+-----------------------------------
+-- * Functions
+-----------------------------------
 
-Core.g_Root = getRootElement()
-Core.g_ThisResource = Resource:getThis()
-Core.g_ResourceRoot = Core.g_ThisResource:getRootElement()
-
-Core.VERSION = 240
-
-----------------------
--- Functions/Events
-----------------------
-
-function Core:onResourceStart()
-	Settings:loadSettings()
-	Updater:setup()
-	
-	Statistics:setup()
+function Core.onLoad()
+	Settings.load()
 end
-addEventHandler("onResourceStart",Core.g_ResourceRoot,Core.onResourceStart)
+
+-----------------------------------
+-- * Events
+-----------------------------------
+
+addEventHandler("onResourceStart",resourceRoot,Core.onLoad)

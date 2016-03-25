@@ -15,366 +15,271 @@
 -- * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ---------------------------------------------------
 
---[[------------------
-* We highly discourage
-* directly editing the
-* scripts. Please use
-* the customization
-* possibilities.
---------------------]]
+-----------------------------------
+-- * Variables
+-----------------------------------
 
-----------------------
--- Variables
-----------------------
+Settings = setmetatable({},{__index = {}})
 
-Settings = {}
-Settings = setmetatable({},{__index = Settings})
+Settings.SETTINGS_FILE = "settings.xml"
+Settings.g_aSettings = {}
 
-Settings.CONFIG_FILE = "config.xml"
-Settings.g_KeyTable = {["mouse1"]= 0,["mouse2"]= 0,["mouse3"]= 0,["mouse4"]= 0,["mouse5"]= 0,["mouse_wheel_up"]= 0,["mouse_wheel_down"]= 0, 
-["arrow_l"]= 0,["arrow_u"]= 0,["arrow_r"]= 0,["arrow_d"]= 0,["0"]= 0,["1"]= 0,["2"]= 0,["3"]= 0,["4"]= 0,["5"]= 0,["6"]= 0,["7"]= 0,["8"]= 0, 
-["9"]= 0,["a"]= 0,["b"]= 0,["c"]= 0,["d"]= 0,["e"]= 0,["f"]= 0,["g"]= 0,["h"]= 0,["i"]= 0,["j"]= 0,["k"]= 0,["l"]= 0,["m"]= 0,["n"]= 0,["o"]= 0,
-["p"]= 0,["q"]= 0,["r"]= 0,["s"]= 0,["t"]= 0,["u"]= 0,["v"]= 0,["w"]= 0,["x"]= 0,["y"]= 0,["z"]= 0,["num_0"]= 0,["num_1"]= 0,["num_2"]= 0,
-["num_3"]= 0,["num_4"]= 0,["num_5"]= 0,["num_6"]= 0,["num_7"]= 0,["num_8"]= 0,["num_9"]= 0,["num_mul"]= 0,["num_add"]= 0,["num_sep"]= 0,
-["num_sub"]= 0,["num_div"]= 0,["num_dec"]= 0,["num_enter"]= 0,["F1"]= 0,["F2"]= 0,["F3"]= 0,["F4"]= 0,["F5"]= 0,["F6"]= 0,
-["F7"]= 0,["F8"]= 0,["F9"]= 0,["F10"]= 0,["F11"]= 0,["F12"]= 0,["escape"]= 0,["backspace"]= 0, ["tab"]= 0,["lalt"]= 0,["ralt"]= 0,["enter"]= 0,
-["space"]= 0,["pgup"]= 0,["pgdn"]= 0,["end"]= 0,["home"]= 0,["insert"]= 0,["delete"]= 0,["lshift"]= 0,["rshift"]= 0, 
-["lctrl"]= 0,["rctrl"]= 0,["["]= 0,["]"]= 0,["pause"]= 0,["capslock"]= 0,["scroll"]= 0,[";"]= 0,["]= 0,"]= 0,["-"]= 0,["."]= 0,["/"]= 0,
-["#"]= 0,["\\"]= 0,["="]=0 }
+-----------------------------------
+-- * Functions
+-----------------------------------
 
---[[
-Types:
-0: boolean
-1: number
-2: string
-]]
+function Settings.load()
+	if not File.exists(Settings.SETTINGS_FILE) then
+		if File.exists("config.xml") then
+			Converter.convert()
+		else
+			Settings.create()
+		end
+	else
+		Settings.loadConfig()
+	end
+end
 
-Settings.g_SettingsTable = {
-	["enablecredits"] = {
-		["value"] = true,
-		["value_type"] = 0
-	},
-	["defaultstate"] = {
-		["value"] = true,
-		["value_type"] = 0
-	},
-	["infomessage"] = {
-		["value"] = "#3A85D6[Anti-Bounce]: #ffffffToggle the Anti-Bounce with '#368DEB%1#ffffff' or by simply pressing '#368DEB%2#ffffff'.",
-		["value_type"] = 2,
-		["disable"] = false,
-		["disable_type"] = 0
-	},
-	["infomessage2"] = {
-		["value"] = "#3A85D6[Anti-Bounce]: #ffffffToggle the Anti-Bounce with '#368DEB%1#ffffff'.",
-		["value_type"] = 2,
-		["disable"] = false,
-		["disable_type"] = 0
-	},
-	["togglemessage"] = {
-		["value"] = "#3A85D6[Anti-Bounce]: #ffffffThe Anti-Bounce is now %1#ffffff.",
-		["value_type"] = 2,
-		["disable"] = false,
-		["disable_type"] = 0
-	},
-	["preferencemessage"] = {
-		["value"] = "#3A85D6[Anti-Bounce]: #ffffffYour #368DEBpreferences #ffffffare #368DEBloaded #ffffff|| Anti-Bounce is %1#ffffff.",
-		["value_type"] = 2,
-		["disable"] = false,
-		["disable_type"] = 0
-	},
-	["disabledmessage"] = {
-		["value"] = "#ff0000disabled",
-		["value_type"] = 2
-	},
-	["enabledmessage"] = {
-		["value"] = "#00ff00enabled",
-		["value_type"] = 2
-	},
-	["bouncecommands"] = {
-		["value"] = "ab",
-		["value_type"] = 2,
-		["disable"] = false,
-		["disable_type"] = 0
-	},
-	["bouncebind"] = {
-		["value"] = "f10",
-		["value_type"] = 2,
-		["disable"] = true,
-		["disable_type"] = 0
-	},
-	["checkupdates"] = {
-		["value"] = true,
-		["value_type"] = 0,
-	},
-	["updatechecktimer"] = {
-		["value"] = 1800000,
-		["value_type"] = 1,
-	},
-	["enablestats"] = {
-		["value"] = true,
-		["value_type"] = 0,
-	},
-	["enablesettingstats"] = {
-		["value"] = true,
-		["value_type"] = 0,
-	},
-	["enableplayerstats"] = {
-		["value"] = true,
-		["value_type"] = 0,
-	},
-}
-
-----------------------
--- Functions/Events
-----------------------
-
-function Settings:loadSettings()
-	if not File.exists(Settings.CONFIG_FILE) then
-		Settings:createConfigurationFile()
-		return
+function Settings.writeSettingsBlock(lSettingsFile,lSettingsTable,lTab,lConvert)
+	local lTabs = ""
+	
+	for i=1,lTab do
+		lTabs = lTabs.."\t"
 	end
 	
-	local lConfigXML = XML.load(Settings.CONFIG_FILE)
-	if(lConfigXML == false) then
-		Utils:outputMessageToAdmins("#3A85D6[Anti-Bounce]: #ff0000Unable to read the configuration file.",255,255,255,true)
-		return
-	end
-	
-	for _,lNode in pairs(lConfigXML:getChildren()) do
-		local lNodeName = lNode:getName()
-		
-		if(Settings.g_SettingsTable[lNodeName] ~= nil) then
-			if(Settings.g_SettingsTable[lNodeName]["value"] ~= nil) then
-				local lValue = lNode:getValue()
-				
-				if(lValue ~= false and lValue ~= "") then
-					if(Settings.g_SettingsTable[lNodeName]["value_type"] == 0) then
-						if(lValue == "true") then
-							Settings.g_SettingsTable[lNodeName]["value"] = true
-						elseif(lValue == "false") then
-							Settings.g_SettingsTable[lNodeName]["value"] = false
-						else
-							Utils:outputMessageToAdmins("#3A85D6[Anti-Bounce]: #ff0000The setting #ffffff"..tostring(lNodeName).." #ff0000expects a "
-								.."boolean (true/false) as value. Please modify it.",255,255,255,true)
-						end
-					elseif(Settings.g_SettingsTable[lNodeName]["value_type"] == 1) then
-						if(tonumber(lValue) ~= nil) then
-							Settings.g_SettingsTable[lNodeName]["value"] = tonumber(lValue)
-						else
-							Utils:outputMessageToAdmins("#3A85D6[Anti-Bounce]: #ff0000The setting #ffffff"..tostring(lNodeName).." #ff0000expects a "
-								.."number as value. Please modify it.",255,255,255,true)
-						end
-					elseif(Settings.g_SettingsTable[lNodeName]["value_type"] == 2) then
-						Settings.g_SettingsTable[lNodeName]["value"] = lValue
-					end
-				else
-					Utils:outputMessageToAdmins("#3A85D6[Anti-Bounce]: #ff0000The setting #ffffff"..tostring(lNodeName).." #ff0000expects a "
-						.."value. Please add it.",255,255,255,true)
+	for lIndex,lData in pairs(lSettingsTable) do
+		if lData["type"] == SettingsTemplate.TYPE_CATEGORY then
+			lSettingsFile:write(lTabs.."<"..lData["setting"]..">\n")
+			Settings.writeSettingsBlock(lSettingsFile,lData["settings"],(lTab + 1),lConvert)
+			lSettingsFile:write("\n"..lTabs.."</"..lData["setting"]..">")
+		else
+			if lData["description"] then
+				lSettingsFile:write(lTabs.."<!--\n"..lTabs.."\t"..lData["description"]:gsub("\t",""):gsub("\n","\n\t"..lTabs).."\n"..lTabs.."-->\n")
+			end
+			
+			lSettingsFile:write(lTabs.."<"..lData["setting"])
+			
+			if lData["attributes"] then
+				for _,lAttributeData in pairs(lData["attributes"]) do
+					lSettingsFile:write(" "..lAttributeData["attribute"].."=\""..lAttributeData["default"].."\"")
 				end
 			end
 			
-			for lName,lValue in pairs(lNode:getAttributes()) do
-				if(Settings.g_SettingsTable[lNodeName][lName] ~= nil) then
-					if(lValue ~= false and lValue ~= "") then
-						if(Settings.g_SettingsTable[lNodeName][lName.."_type"] == 0) then
-							if(lValue == "true") then
-								Settings.g_SettingsTable[lNodeName][lName] = true
-							elseif(lValue == "false") then
-								Settings.g_SettingsTable[lNodeName][lName] = false
-							else
-								Utils:outputMessageToAdmins("#3A85D6[Anti-Bounce]: #ff0000The attribute #ffffff"..lName.." #ff0000in setting #ffffff"
-									..tostring(lNodeName).." #ff0000expects a boolean (true/false) as value. Please modify it.",255,255,255,true)
-							end
-						elseif(Settings.g_SettingsTable[lNodeName][lName.."_type"] == 1) then
-							if(tonumber(lValue) ~= nil) then
-								Settings.g_SettingsTable[lNodeName][lName] = tonumber(lValue)
-							else
-								Utils:outputMessageToAdmins("#3A85D6[Anti-Bounce]: #ff0000The attribute #ffffff"..lName.." #ff0000in setting #ffffff"
-									..tostring(lNodeName).." #ff0000expects a number as value. Please modify it.",255,255,255,true)
-							end
-						elseif(Settings.g_SettingsTable[lNodeName][lName.."_type"] == 2) then
-							Settings.g_SettingsTable[lNodeName][lName] = lValue
+			lSettingsFile:write(">"..(lData["default"] or 0).."</"..lData["setting"]..">")
+			
+			if(lIndex < #lSettingsTable) then
+				lSettingsFile:write("\n\n")
+			end
+		end
+	end
+end
+
+function Settings.validateSetting(lSetting,lTemplateNode,lbIsAttribute)
+	if lTemplateNode.type == SettingsTemplate.TYPE_BOOL then
+		local lValue = tonumber(tostring(lSetting:getValue():gsub("true","1"):gsub("false","0")))
+		
+		if lValue ~= 0 and lValue ~= 1 then
+			Utils.outputMessageToAdmins("#3A85D6[Anti-Bounce"..((lbIsAttribute) and (" "..lSetting:getParent():getName()) or ("")).."]: #ff0000'#ffffff"..
+				lSetting:getName().."#ff0000' expects a boolean but has '#ffffff"..lSetting:getValue().."#ff0000'.",255,255,255,true)
+			Utils.outputMessageToAdmins("#3A85D6[Anti-Bounce]: #ff0000Please refer to the Anti-Bounce documentation.",255,255,255,true)
+			
+			return false
+		end
+	elseif lTemplateNode.type == SettingsTemplate.TYPE_INTEGER then
+		if tonumber(lValue) == nil then
+			Utils.outputMessageToAdmins("#3A85D6[Anti-Bounce"..((lbIsAttribute) and (" "..lSetting:getParent():getName()) or ("")).."]: #ff0000'#ffffff"..
+				lSetting:getName().."#ff0000' expects an integer but has '#ffffff"..lSetting:getValue().."#ff0000'.",255,255,255,true)
+			Utils.outputMessageToAdmins("#3A85D6[Anti-Bounce]: #ff0000Please refer to the Anti-Bounce documentation.",255,255,255,true)
+			
+			return false
+		end
+	elseif lTemplateNode.type == SettingsTemplate.TYPE_CUSTOM then
+		self = lTemplateNode
+		node = lSetting
+		local lbSuccess = assert(loadstring(lTemplateNode.custom))()
+		self = nil
+		node = nil
+		
+		return lbSuccess
+	end
+	-- String is always valid, it does not require a check.
+	
+	return true
+end
+
+function Settings.loadSettingsBlock(lSettingsNodeTable,lTemplateNodes,lSettingsTable)
+	for _,lNode in ipairs(lSettingsNodeTable:getChildren()) do
+		local lTemplateNode = false
+	
+		for _,lTemplateTbl in pairs(lTemplateNodes) do
+			if lTemplateTbl.setting == lNode:getName() then
+				lTemplateNode = lTemplateTbl
+				break
+			end
+		end
+		
+		if lTemplateNode == false then
+			Utils.outputMessageToAdmins("#3A85D6[Anti-Bounce]: #ff0000'#ffffff"..lNode:getName().."#ff0000' is not a valid setting in this category.",255,255,255,true)
+			Utils.outputMessageToAdmins("#3A85D6[Anti-Bounce]: #ff0000Please refer to the Anti-Bounce documentation.",255,255,255,true)
+			return false
+		end
+		
+		if lSettingsTable[lTemplateNode.setting] == nil then
+			lSettingsTable[lTemplateNode.setting] = {}
+		end
+		
+		if lTemplateNode.type ~= SettingsTemplate.TYPE_CATEGORY then
+			if Settings.validateSetting(lNode,lTemplateNode,false) == false then
+				return false
+			end
+			
+			local lValue = lNode:getValue()
+			
+			if lTemplateNode.type == SettingsTemplate.TYPE_BOOL then
+				lValue = tonumber(tostring(lNode:getValue():gsub("true","1"):gsub("false","0")))
+			elseif lTemplateNode.type == SettingsTemplate.TYPE_INTEGER then
+				lValue = tonumber(lValue)
+			end
+			
+			lSettingsTable[lTemplateNode.setting].value = lValue
+
+			if lTemplateNode.attributes then
+				if lSettingsTable[lTemplateNode.setting].attributes == nil then
+					lSettingsTable[lTemplateNode.setting].attributes = {}
+				end
+				
+				for lAttributeName,lAttributeValue in pairs(lNode:getAttributes()) do
+					local lAttributeNode = false
+		
+					for _,lAttributeTbl in pairs(lTemplateNode.attributes) do
+						if lAttributeTbl.attribute == lAttributeName then
+							lAttributeNode = lAttributeTbl
+							break
 						end
-					else
-						Utils:outputMessageToAdmins("#3A85D6[Anti-Bounce]: #ff0000The attribute #ffffff"..lName.." #ff0000in setting #ffffff"
-							..tostring(lNodeName).." #ff0000expects a value. Please add it.",255,255,255,true)
 					end
-				else
-					Utils:outputMessageToAdmins("#3A85D6[Anti-Bounce]: #ff0000The setting #ffffff"..tostring(lNodeName).." #ff0000doesnt have a attribute "
-						.."#ffffff"..tostring(lName)..". #ff0000Please remove it.",255,255,255,true)
+					
+					if lAttributeNode == false then
+						Utils.outputMessageToAdmins("#3A85D6[Anti-Bounce "..lNode:getName().."]: #ff0000'#ffffff"..lAttributeName.."#ff0000' is not a valid attribute.",255,255,255,true)
+						Utils.outputMessageToAdmins("#3A85D6[Anti-Bounce]: #ff0000Please refer to the Anti-Bounce documentation.",255,255,255,true)
+						return false
+					end
+			
+					if lSettingsTable[lTemplateNode.setting].attributes[lAttributeName] == nil then
+						lSettingsTable[lTemplateNode.setting].attributes[lAttributeName] = {}
+					end
+			
+					local lAttributeCheck = setmetatable({},{__index = {}})
+					
+					lAttributeCheck.getValue =
+					function()
+						return lAttributeValue
+					end
+					
+					lAttributeCheck.getName =
+					function()
+						return lAttributeName
+					end
+					
+					lAttributeCheck.getParent =
+					function()
+						return lNode
+					end
+					
+					if Settings.validateSetting(lAttributeCheck,lAttributeNode,true) == false then
+						return false
+					end
+					
+					local lValue = lAttributeValue
+					
+					if lAttributeNode.type == SettingsTemplate.TYPE_BOOL then
+						lValue = tonumber(tostring(lAttributeValue:gsub("true","1"):gsub("false","0")))
+					elseif lAttributeNode.type == SettingsTemplate.TYPE_INTEGER then
+						lValue = tonumber(lValue)
+					end
+					
+					lSettingsTable[lTemplateNode.setting].attributes[lAttributeName].value = lValue
 				end
 			end
 		else
-			Utils:outputMessageToAdmins("#3A85D6[Anti-Bounce]: #ff0000The setting #ffffff"..tostring(lNodeName).." #ff0000in the configuration file "
-			.."is not a supported setting.",255,255,255,true)
+			lSettingsTable[lTemplateNode.setting].settings = {}
+			Settings.loadSettingsBlock(lNode,lTemplateNode.settings,lSettingsTable[lTemplateNode.setting].settings)
 		end
 	end
 	
-	if(Settings.g_SettingsTable["bouncebind"]["disable"] == false) then
-		if(Settings.g_KeyTable[Settings.g_SettingsTable["bouncebind"]["value"]] == nil and
-			Settings.g_KeyTable[Settings.g_SettingsTable["bouncebind"]["value"]:upper()] == nil) then
-			Utils:outputMessageToAdmins("#3A85D6[Anti-Bounce]: #ff0000The setting #ffffffbouncebind #ff0000has an invalid key to " 
-				.."bind on. Please modify it.",255,255,255,true)
-				Settings.g_SettingsTable["bouncebind"]["disable"] = true
-		end
-	end
-	
-	lConfigXML:destroy()
+	return true
 end
 
-function Settings:createConfigurationFile()
-	local lConfigFile = File.new(Settings.CONFIG_FILE)
-	if(lConfigFile == false) then
-		Utils:outputMessageToAdmins("#3A85D6[Anti-Bounce]: #ff0000Unable to create a configuration file.",255,255,255,true)
+function Settings.create()
+	if File.exists(Settings.SETTINGS_FILE) then
+		File.delete(Settings.SETTINGS_FILE)
+	end
+	
+	local lSettingsFile = File.new(Settings.SETTINGS_FILE)
+
+	if not lSettingsFile then
+		Utils.outputMessageToAdmins("#3A85D6[Anti-Bounce]: #ff0000Unable to create a configuration file.",255,255,255,true)
 		return
 	end
 	
-	lConfigFile:write(
-[[<config>
-	<!-- 
-		 Do you want to show a little message in the chat telling everyone whose hard work creating the Anti-Bounce was?
-		 true = enabled, false = disabled, Default: ]]..tostring(Settings.g_SettingsTable["enablecredits"]["value"])..[[ 
-	-->
-	<enablecredits>]]..tostring(Settings.g_SettingsTable["enablecredits"]["value"])..[[</enablecredits>
+	lSettingsFile:write("<settings>\n")
+	Settings.writeSettingsBlock(lSettingsFile,SettingsTemplate.get(),1,false)
+	lSettingsFile:write("\n</settings>")
 	
-	<!-- 
-		 What state the Anti-Bounce has to be at default for new players?
-		 true = enabled, false = disabled, Default: ]]..tostring(Settings.g_SettingsTable["defaultstate"]["value"])..[[ 
-	-->
-	<defaultstate>]]..tostring(Settings.g_SettingsTable["defaultstate"]["value"])..[[</defaultstate>
-	
-	<!-- 
-		 This message is shown when both commands as binds are set. Use %1 where the commands have to be shown and %2 where 
-		 the bind has to be shown.
-		 
-		 Value: String, 
-		 Default: ]]..tostring(Settings.g_SettingsTable["infomessage"]["value"])..[[
-		 
-		 Attributes: disable (Disables the message when set to true. Default: ]]..tostring(Settings.g_SettingsTable["infomessage"]["disable"])..[[)
-	-->
-	<infomessage disable="]]..tostring(Settings.g_SettingsTable["infomessage"]["disable"])..[[">]]..tostring(Settings.g_SettingsTable["infomessage"]["value"])..[[</infomessage>
-	
-	<!-- 
-		 This message is shown when either only the commands are enabled or a bind is set. Use %1 on the place they have to be shown.
-		 
-		 Value: String, 
-		 Default: ]]..tostring(Settings.g_SettingsTable["infomessage2"]["value"])..[[
-		 
-		 Attributes: disable (Disables the message when set to true. Default: ]]..tostring(Settings.g_SettingsTable["infomessage2"]["disable"])..[[)
-	-->
-	<infomessage2 disable="]]..tostring(Settings.g_SettingsTable["infomessage2"]["disable"])..[[">]]..tostring(Settings.g_SettingsTable["infomessage2"]["value"])..[[</infomessage2>
-	
-	<!-- 
-		 This message is shown whenever the Anti-Bounce is turned on/off. Use %1 wherever it should be replaced with either "disabled" or "enabled".
-		 Those are both also customizable under "disabledmessage" and "enabledmessage".
-		 
-		 Value: String, 
-		 Default: ]]..tostring(Settings.g_SettingsTable["togglemessage"]["value"])..[[
-		 
-		 Attributes: disable (Disables the message when set to true. Default: ]]..tostring(Settings.g_SettingsTable["togglemessage"]["disable"])..[[)
-	-->
-	<togglemessage disable="]]..tostring(Settings.g_SettingsTable["togglemessage"]["disable"])..[[">]]..tostring(Settings.g_SettingsTable["togglemessage"]["value"])..[[</togglemessage>
-	
-	<!-- 
-		 This message is shown when the player' preferences are loaded. Use %1 wherever the state should be replaced with either "disabled" or 
-		 "enabled". Those are both also customizable under "disabledmessage" and "enabledmessage".
-		 
-		 Value: String, 
-		 Default: ]]..tostring(Settings.g_SettingsTable["preferencemessage"]["value"])..[[
-		 
-		 Attributes: disable (Disables the message when set to true. Default: ]]..tostring(Settings.g_SettingsTable["preferencemessage"]["disable"])..[[)
-	-->
-	<preferencemessage disable="]]..tostring(Settings.g_SettingsTable["preferencemessage"]["disable"])..[[">]]..tostring(Settings.g_SettingsTable["preferencemessage"]["value"])..[[</preferencemessage>
-	
-	<!-- 
-		 This message is used in togglemessage and preferencemessage to show that the Anti-Bounce is disabled.
-		 
-		 Value: String, 
-		 Default: ]]..tostring(Settings.g_SettingsTable["disabledmessage"]["value"])..[[
-	
-	-->
-	<disabledmessage>]]..tostring(Settings.g_SettingsTable["disabledmessage"]["value"])..[[</disabledmessage>
-	
-	<!-- 
-		 This message is used in togglemessage and preferencemessage to show that the Anti-Bounce is enabled.
-		 
-		 Value: String, 
-		 Default: ]]..tostring(Settings.g_SettingsTable["enabledmessage"]["value"])..[[
-	
-	-->
-	<enabledmessage>]]..tostring(Settings.g_SettingsTable["enabledmessage"]["value"])..[[</enabledmessage>
-	
-	<!-- 
-		 You are able to specify what commands (separate each command with "," you want your players to be able to use to
-		 toggle the Anti-Bounce with.
-		 
-		 Value: String, 
-		 Default: ]]..tostring(Settings.g_SettingsTable["bouncecommands"]["value"])..[[
-		 
-		 Attributes: disable (Disables the use of commands when set to true. Default: ]]..tostring(Settings.g_SettingsTable["bouncecommands"]["disable"])..[[)
-	-->
-	<bouncecommands disable="]]..tostring(Settings.g_SettingsTable["bouncecommands"]["disable"])..[[">]]..tostring(Settings.g_SettingsTable["bouncecommands"]["value"])..[[</bouncecommands>
-	
-	<!-- 
-		 You are able to specify what key to set to bind the toggle feature of the Anti-Bounce can be used with.
-		 
-		 Value: String, 
-		 Default: ]]..tostring(Settings.g_SettingsTable["bouncebind"]["value"])..[[
-		 
-		 Attributes: disable (Disables the use of a bind when set to true. Default: ]]..tostring(Settings.g_SettingsTable["bouncebind"]["disable"])..[[)
-	-->
-	<bouncebind disable="]]..tostring(Settings.g_SettingsTable["bouncebind"]["disable"])..[[">]]..tostring(Settings.g_SettingsTable["bouncebind"]["value"])..[[</bouncebind>
-	
-	<!-- 
-		 Should the Anti-Bounce script check for updates and inform you about them?
-		 
-		 true = yes, false = no, Default: ]]..tostring(Settings.g_SettingsTable["checkupdates"]["value"])..[[ 
-	-->
-	<checkupdates>]]..tostring(Settings.g_SettingsTable["checkupdates"]["value"])..[[</checkupdates>
-	
-	<!-- 
-		Here you are able to specify after what interval (in milliseconds) the script should check for updates. This requires
-		checkupdates to be set on true.
-		 
-		Default: ]]..tostring(Settings.g_SettingsTable["updatechecktimer"]["value"])..[[ 
-	-->
-	<updatechecktimer>]]..tostring(Settings.g_SettingsTable["updatechecktimer"]["value"])..[[</updatechecktimer>
-	
-	<!-- 
-		 Allows various statistics to be send to our database. This allows us to get a good idea about the usage of the Anti-Bounce
-		 and on what it runs. This allows us to improve the Anti-Bounce on the right moments. This information is sent anonymously
-		 with the use of an unique ID we cannot link to any server at all.
-		 
-		 true = enabled, false = disabled, Default: ]]..tostring(Settings.g_SettingsTable["enablestats"]["value"])..[[ 
-	-->
-	<enablestats>]]..tostring(Settings.g_SettingsTable["enablestats"]["value"])..[[</enablestats>
-	
-	<!-- 
-		 When enabled this allows some of your settings to be sent when collecting statistics.
-		 
-		 true = enabled, false = disabled, Default: ]]..tostring(Settings.g_SettingsTable["enablesettingstats"]["value"])..[[ 
-	-->
-	<enablesettingstats>]]..tostring(Settings.g_SettingsTable["enablesettingstats"]["value"])..[[</enablesettingstats>
-		
-	<!-- 
-		 When enabled this allows some data of the usage of the Anti-Bounce to be sent when collecting statistics.
-		 This one is the most important one when it comes to giving us an idea on how to improve our script.
-		 This information is sent anonymously with the usage of an unique ID instead of an IP or serial. We cannot
-		 trace this unique ID back to the player him or herself.
-		 
-		 true = enabled, false = disabled, Default: ]]..tostring(Settings.g_SettingsTable["enableplayerstats"]["value"])..[[ 
-	-->
-	<enableplayerstats>]]..tostring(Settings.g_SettingsTable["enableplayerstats"]["value"])..[[</enableplayerstats>
-</config>]])
-	
-	lConfigFile:close()
+	lSettingsFile:close()
 
-	Utils:outputMessageToAdmins("#3A85D6[Anti-Bounce]: #ffffffA new configuration file has been created. In case you want to "
-		.."customize the script you might consider editing it.",255,255,255,true)
+	Utils.outputMessageToAdmins("#3A85D6[Anti-Bounce]: #ffffffCreated a new configuration file '"..Settings.SETTINGS_FILE.."'.",255,255,255,true)
+	Utils.outputMessageToAdmins("#3A85D6[Anti-Bounce]: #ffffffUse /abreload to reload this file after editing it.",255,255,255,true)
 end
 
-function Settings:onSettingsRequest()
-	triggerClientEvent(client,"onSettingsReceived",Core.g_ResourceRoot,Settings.g_SettingsTable)
+function Settings.prepareDefaultSettings(lSettingsTable,lSettingsTemplate)
+	for _,lTemplateNode in pairs(lSettingsTemplate) do
+		if lSettingsTable[lTemplateNode.setting] == nil then
+			lSettingsTable[lTemplateNode.setting] = {}
+			
+			if lTemplateNode.type ~= SettingsTemplate.TYPE_CATEGORY then
+				lSettingsTable[lTemplateNode.setting].value = lTemplateNode.default
+				lSettingsTable[lTemplateNode.setting].attributes = {}
+				
+				if lTemplateNode.attributes ~= nil then
+					for _,lAttributeTable in pairs(lTemplateNode.attributes) do
+						if lAttributeTable.attribute ~= nil then -- Prevents a strange Lua bug
+							if lTemplateNode.attributes[lAttributeTable.attribute] == nil then
+								lTemplateNode.attributes[lAttributeTable.attribute] = {}
+							end
+							
+							lTemplateNode.attributes[lAttributeTable.attribute].value = lAttributeTable.default
+						end
+					end
+				end
+			else
+				Settings.prepareDefaultSettings(lSettingsTable[lTemplateNode.setting],lTemplateNode.settings)
+			end
+		end
+	end
 end
-addEvent("onSettingsRequest",true)
-addEventHandler("onSettingsRequest",Core.g_ResourceRoot,Settings.onSettingsRequest)
+
+function Settings.loadConfig()
+	if not File.exists(Settings.SETTINGS_FILE) then
+		Settings.create()
+	end
+	
+	local lSettingsFile = XML.load(Settings.SETTINGS_FILE)
+	
+	if not lSettingsFile then
+		Utils.outputMessageToAdmins("#3A85D6[Anti-Bounce]: #ff0000Unable to load the configuration file.",255,255,255,true)
+		return
+	end
+	
+	Settings.g_aSettings = {}
+	Settings.prepareDefaultSettings(Settings.g_aSettings,SettingsTemplate.get())
+	
+	local lbSuccess = Settings.loadSettingsBlock(lSettingsFile,SettingsTemplate.get(),Settings.g_aSettings)
+	
+	lSettingsFile:unload()
+	
+	if lbSuccess then
+		outputDebugString("[Anti-Bounce]: Succesfully loaded configuration file.")
+	else
+		Utils.outputMessageToAdmins("#3A85D6[Anti-Bounce]: #ff0000Unable to load the configuration file.",255,255,255,true)
+	end
+end
