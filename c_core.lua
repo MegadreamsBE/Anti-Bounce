@@ -18,16 +18,12 @@
 ---------------------------------------------------
 
 --[[------------------
-* Anti-Bounce v2.4.0
-* File: c_core.lua
-*
 * We highly discourage
 * directly editing the
 * scripts. Please use
 * the customization
 * possibilities.
 --------------------]]
-
 ----------------------
 -- Variables
 ----------------------

@@ -16,9 +16,6 @@
 ---------------------------------------------------
 
 --[[------------------
-* Anti-Bounce v2.4.0
-* File: s_statistics.lua
-*
 * We highly discourage
 * directly editing the
 * scripts. Please use

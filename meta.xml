@@ -1,5 +1,5 @@
 <meta>
-	<info author="-|TG|-Arezu and UAG|MegaDreams" name="Anti-Bounce" version="2.4.0" description="Anti-Bounce" type="misc" />
+	<info author="Arezu and MegaDreams" name="Anti-Bounce" version="2.4.0" description="Anti-Bounce" type="misc" />
 	
 	<script src="c_core.lua" type="client" cache="false" />
 	<script src="c_preferences.lua" type="client" cache="false" />
