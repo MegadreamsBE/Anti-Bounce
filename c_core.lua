@@ -113,7 +113,7 @@ function Core.onSettingsReceived(lSettingsTable)
 	end
 	
 	if(Core.g_SettingsTable["enablecredits"]["value"]) then
-		outputChatBox("#3A85D6[Anti-Bounce]: #ffffffv2.4.0 has been created by #368DEBArezu #ffffffand #368DEB"
+		outputChatBox("#3A85D6[Anti-Bounce]: #ffffffv2.5.0 has been created by #368DEBArezu #ffffffand #368DEB"
 			.."MegaDreams#ffffff.",255,255,255,true)
 	end
 	
@@ -129,34 +129,14 @@ function Core.onSettingsReceived(lSettingsTable)
 	
 	Core.g_LastCheck = getRealTime().timestamp
 	
-	if(Core.g_SettingsTable["enableplayerstats"]["value"] == true) then
-		Core.updateUsageInfo()
-		setTimer(Core.updateUsageInfo,180000,0)
-	end
-	
 	addCommandHandler("bouncedebug",Core.toggleDebug)
 	
-	addEventHandler("onClientVehicleCollision",Core.g_Root,Core.onVehicleCollision)
 	addEventHandler("onClientPreRender",Core.g_Root,Core.onPreRender)
 	addEventHandler("onClientRender",Core.g_Root,Core.onDebugRender)
 	triggerEvent("onAntiBouncedLoaded",Core.g_Root)
 end
 addEvent("onSettingsReceived",true)
 addEventHandler("onSettingsReceived",Core.g_ResourceRoot,Core.onSettingsReceived)
-
-function Core.updateUsageInfo()
-	if not (Core.g_bABEnabled) then
-		Core.g_UsageTable["time_disabled"] = Core.g_UsageTable["time_disabled"] + (getRealTime().timestamp - Core.g_LastCheck)
-	else
-		Core.g_UsageTable["time_enabled"] = Core.g_UsageTable["time_enabled"] + (getRealTime().timestamp - Core.g_LastCheck)
-	end
-
-	Core.g_LastCheck = getRealTime().timestamp
-	
-	Core.g_UsageTable["uuid"] = Preferences:generateUniqueId()
-	Core.g_UsageTable["code"] = sha256(getPlayerSerial())
-	setElementData(localPlayer,"ab.player.usage",Core.g_UsageTable,true)
-end
 
 function Core:toggleBounce()
 	Core.g_bABEnabled = not Core.g_bABEnabled
@@ -168,17 +148,7 @@ function Core:toggleBounce()
 			outputChatBox(Core.g_SettingsTable["togglemessage"]["value"]:gsub("%%1",Core.g_SettingsTable["disabledmessage"]["value"]),255,255,255,true)
 		end
 	end
-	
-	if(Core.g_SettingsTable["enableplayerstats"]["value"] == true) then
-		if(Core.g_bABEnabled) then
-			Core.g_UsageTable["time_disabled"] = Core.g_UsageTable["time_disabled"] + (getRealTime().timestamp - Core.g_LastCheck)
-		else
-			Core.g_UsageTable["time_enabled"] = Core.g_UsageTable["time_enabled"] + (getRealTime().timestamp - Core.g_LastCheck)
-		end
 
-		Core.g_LastCheck = getRealTime().timestamp
-	end
-	
 	Preferences:updatePreferences()
 	triggerEvent("onAntiBounceToggled",Core.g_Root,Core.g_bABEnabled)
 end
@@ -224,7 +194,7 @@ function Core:onDebugRender()
 		return
 	end
 	
-	dxDrawText("== Anti-Bounce (v2.4.0) Debug ==", Core.g_ScreenW-conv(250), Core.g_ScreenH-conv(165), 0, 0, 
+	dxDrawText("== Anti-Bounce (v2.5.0) Debug ==", Core.g_ScreenW-conv(250), Core.g_ScreenH-conv(165), 0, 0, 
 		tocolor(255, 255, 255, 255), conv(1), "default","left","top",false,false,false,true)
 	
 	if(Core.g_bABEnabled) then

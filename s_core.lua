@@ -41,7 +41,7 @@ Core.g_Root = getRootElement()
 Core.g_ThisResource = Resource:getThis()
 Core.g_ResourceRoot = Core.g_ThisResource:getRootElement()
 
-Core.VERSION = 240
+Core.VERSION = 250
 
 ----------------------
 -- Functions/Events
@@ -50,7 +50,5 @@ Core.VERSION = 240
 function Core:onResourceStart()
 	Settings:loadSettings()
 	Updater:setup()
-	
-	Statistics:setup()
 end
 addEventHandler("onResourceStart",Core.g_ResourceRoot,Core.onResourceStart)

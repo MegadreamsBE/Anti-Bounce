@@ -120,14 +120,17 @@ Settings.g_SettingsTable = {
 	["enablestats"] = {
 		["value"] = true,
 		["value_type"] = 0,
+		["removed"] = true
 	},
 	["enablesettingstats"] = {
 		["value"] = true,
 		["value_type"] = 0,
+		["removed"] = true
 	},
 	["enableplayerstats"] = {
 		["value"] = true,
 		["value_type"] = 0,
+		["removed"] = true
 	},
 }
 
@@ -152,6 +155,10 @@ function Settings:loadSettings()
 		
 		if(Settings.g_SettingsTable[lNodeName] ~= nil) then
 			if(Settings.g_SettingsTable[lNodeName]["value"] ~= nil) then
+				if(Settings.g_SettingsTable[lNodeName]["removed"]) then
+					outputDebugString("[Anti-Bounce]: Setting '"..lNodeName.."' has been removed. Please remove it from your configuration.",0,58,133,214)
+				end
+				
 				local lValue = lNode:getValue()
 				
 				if(lValue ~= false and lValue ~= "") then
@@ -346,32 +353,6 @@ function Settings:createConfigurationFile()
 		Default: ]]..tostring(Settings.g_SettingsTable["updatechecktimer"]["value"])..[[ 
 	-->
 	<updatechecktimer>]]..tostring(Settings.g_SettingsTable["updatechecktimer"]["value"])..[[</updatechecktimer>
-	
-	<!-- 
-		 Allows various statistics to be send to our database. This allows us to get a good idea about the usage of the Anti-Bounce
-		 and on what it runs. This allows us to improve the Anti-Bounce on the right moments. This information is sent anonymously
-		 with the use of an unique ID we cannot link to any server at all.
-		 
-		 true = enabled, false = disabled, Default: ]]..tostring(Settings.g_SettingsTable["enablestats"]["value"])..[[ 
-	-->
-	<enablestats>]]..tostring(Settings.g_SettingsTable["enablestats"]["value"])..[[</enablestats>
-	
-	<!-- 
-		 When enabled this allows some of your settings to be sent when collecting statistics.
-		 
-		 true = enabled, false = disabled, Default: ]]..tostring(Settings.g_SettingsTable["enablesettingstats"]["value"])..[[ 
-	-->
-	<enablesettingstats>]]..tostring(Settings.g_SettingsTable["enablesettingstats"]["value"])..[[</enablesettingstats>
-		
-	<!-- 
-		 When enabled this allows some data of the usage of the Anti-Bounce to be sent when collecting statistics.
-		 This one is the most important one when it comes to giving us an idea on how to improve our script.
-		 This information is sent anonymously with the usage of an unique ID instead of an IP or serial. We cannot
-		 trace this unique ID back to the player him or herself.
-		 
-		 true = enabled, false = disabled, Default: ]]..tostring(Settings.g_SettingsTable["enableplayerstats"]["value"])..[[ 
-	-->
-	<enableplayerstats>]]..tostring(Settings.g_SettingsTable["enableplayerstats"]["value"])..[[</enableplayerstats>
 </config>]])
 	
 	lConfigFile:close()
